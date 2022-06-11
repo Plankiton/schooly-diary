@@ -13,6 +13,7 @@ if not database_name:
     database_name = 'diary'
 
 app = Flask(__name__)
+app.secret_key = getenv("SECRET_KEY")
 db = MongoClient(database_uri)
 diary_db = db[database_name]
 
