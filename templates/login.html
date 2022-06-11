@@ -7,17 +7,22 @@
 					<span class="login100-form-title p-b-51">
 						Login
 					</span>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Username is required">
-						<input class="input100" type="text" name="username" placeholder="Username">
+
+          <label for="email">Email: </label>
+					<div class="wrap-input100 validate-input m-b-16" data-validate = "O email é obrigatório">
+						<input class="input100" type="email" name="email" placeholder="Email">
 						<span class="focus-input100"></span>
 					</div>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "Password is required">
-						<input class="input100" type="password" name="password" placeholder="Password">
-						<span class="focus-input100"></span>
+
+          <label for="senha">Senha: </label>
+					<div class="wrap-input100 validate-input m-b-16" data-validate = "A senha é obrigatória">
+            <span class="focus-input100"></span>
+						<input class="input100" type="password" name="password" placeholder="Senha">
 					</div>
+
 					<div class="flex-sb-m w-full p-t-3 p-b-24">
 						<div>
-							<a href="{{ url_for('register')}}" class="txt1">
+							<a href="{{ url_for('register', sign_type='teacher')}}" class="txt1">
 								Sign Up
 							</a>
 						</div>

@@ -324,7 +324,7 @@ iframe {
   flex-wrap: wrap;
 }
 
-.login100-form-btn {
+button {
   font-family: Ubuntu-Bold;
   font-size: 16px;
   color: #fff;
@@ -422,6 +422,10 @@ iframe {
   }
 }
 
+label {
+  color: #333;
+}
 
-/*//////////////////////////////////////////////////////////////////
-[ Responsive ]*/
+.reference_email_count {
+  text-align: center;
+}

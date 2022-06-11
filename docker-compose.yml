@@ -1,11 +1,12 @@
 version: "3.1"
 
 services:
-  school-diary:
-    restart: always
+  web:
     environment:
-      PORT: 3000
-      MONGO_URL: mongodb://schoolydiary:schoolydiary@mongo:27017
+      FLASK_ENV: development
+      TESTING: 1
+      DATABASE_URI: "mongodb://diary:diary@db:27017"
+    restart: always
     build: .
     image: school-diary:dev
     working_dir: /app
@@ -13,24 +14,26 @@ services:
     security_opt:
       - seccomp:unconfined
     ports:
-      - 3000:3000
+      - 5000:5000
     volumes:
       - ./:/app
     networks:
       - schoolydiary
-  mongo:
+  db:
     image: mongo:4.4.5-bionic
     ports:
       - '27017:27017'
     volumes:
-      - ./.mongo.db:/data/db
+      - /tmp/.mongo.db:/data/db
     environment:
-      MONGO_REPLICA_SET_NAME: schoolydiary
-      MONGO_INITDB_DATABASE: schoolydiary
-      MONGO_INITDB_ROOT_USERNAME: schoolydiary
-      MONGO_INITDB_ROOT_PASSWORD: schoolydiary
+      MONGO_REPLICA_SET_NAME: diary
+      MONGO_INITDB_DATABASE: diary
+      MONGO_INITDB_ROOT_USERNAME: diary
+      MONGO_INITDB_ROOT_PASSWORD: diary
     networks:
       - schoolydiary
+    depends_on:
+      - web
 networks:
   schoolydiary:
     driver: bridge
