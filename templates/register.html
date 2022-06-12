@@ -5,100 +5,142 @@
 			<div class="wrap-login100 p-t-50 p-b-90">
         <form class="login100-form validate-form flex-sb flex-w" method="POST" action="/register/{{sign_type}}">
 					<span class="login100-form-title p-b-51">
-            Cadastro de {{ "Aluno" if sign_type != "teacher" else "Professor" }}
+            Cadastro de {% if sign_type == "teacher" %} Professor {% elif sign_type == "student" %} Aluno {% else %} Turma {% endif %}
 					</span>
 
-          <label for="name">Nome: </label>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "O nome é obrigatório">
-						<input class="input100" type="text" name="name" placeholder="Nome">
-						<span class="focus-input100"></span>
-					</div>
+          {% if sign_type != "class" %}
+            <!-- Teacher and student register -->
 
-          <label for="email">Email: </label>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "O email é obrigatório">
-						<input class="input100" type="email" name="email" placeholder="Email">
-						<span class="focus-input100"></span>
-					</div>
-
-          <label for="phone">Numero de celular: </label>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "O número do celular é obrigatório">
-						<input class="input100" type="phone" name="phone" placeholder="Número do celular">
-						<span class="focus-input100"></span>
-					</div>
-
-          <label for="birth_date">Data de nascimento: </label>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "A data do nascimento é obrigatória">
-						<span class="focus-input100"></span>
-						<input class="input100" type="date" name="birth_date" placeholder="Data de nascimento">
-					</div>
-
-          {% if sign_type == "teacher" %}
-          <label for="senha">Senha: </label>
-					<div class="wrap-input100 validate-input m-b-16" data-validate = "A senha é obrigatória">
-            <span class="focus-input100"></span>
-						<input class="input100" type="password" name="password" placeholder="Senha">
-					</div>
-          {% else %}
-
-
-					<label for="notification_email_count">Emails de notificação: </label>
-					<div class="wrap-input100 m-b-16">
-            <span class="focus-input100"></span>
-            <input id="notification_email_count" class="wrap-input100 m-b-16" onchange="add_email()"
-              placeholder="Quantidade de emails de notificação" name="notification_email_count"
-              type="number"
-            >
-            
-            <div id="notification_email_container">
+            <label for="name">Nome: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "O nome é obrigatório">
+              <input class="input100" type="text" name="name" placeholder="Nome">
+              <span class="focus-input100"></span>
             </div>
-          </div>
-          <script>
 
-            let notification_email_container = document.getElementById("notification_email_container");
-            let notification_email_count = document.getElementById("notification_email_count");
+            <label for="email">Email: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "O email é obrigatório">
+              <input class="input100" type="email" name="email" placeholder="Email">
+              <span class="focus-input100"></span>
+            </div>
 
-            function add_email() {
-              let email_total_count = notification_email_count.value;
-              let email_count = notification_email_container.childElementCount
+            <label for="phone">Numero de celular: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "O número do celular é obrigatório">
+              <input class="input100" type="phone" name="phone" placeholder="Número do celular">
+              <span class="focus-input100"></span>
+            </div>
 
-              if (email_total_count < email_count) {
-                for (let i = email_count; i > email_total_count; i--) {
-                  notification_email_container.removeChild(notification_email_container.lastChild);
+            <label for="birth_date">Data de nascimento: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "A data do nascimento é obrigatória">
+              <span class="focus-input100"></span>
+              <input class="input100 date" type="date" name="birth_date" placeholder="Data de nascimento">
+            </div>
+
+            {% if sign_type == "teacher" %}
+              <label for="senha">Senha: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "A senha é obrigatória">
+                <span class="focus-input100"></span>
+                <input class="input100" type="password" name="password" placeholder="Senha">
+              </div>
+            {% endif %}
+
+            <label for="notification_email_count">Emails de notificação: </label>
+            <div class="wrap-input m-b-16">
+              <span class="focus-input"></span>
+              <input id="notification_email_count" class="wrap-input m-b-16"
+                placeholder="Quantidade de emails de notificação" name="notification_email_count"
+                type="number"
+              >
+              
+              <div id="notification_email_container">
+              </div>
+            </div>
+            <script>
+              function add_email() {
+                let notification_email_container = document.getElementById("notification_email_container");
+                let notification_email_count = document.getElementById("notification_email_count");
+
+                let email_total_count = Number(notification_email_count.value);
+                let email_count = notification_email_container.childElementCount
+
+                console.log("change ", email_total_count, email_count, email_total_count < email_count);
+                if (email_total_count < email_count) {
+                  for (let i = email_count; i > email_total_count; i--) {
+                    notification_email_container.removeChild(notification_email_container.lastChild);
+                  }
+                  return
                 }
-                return
+                
+                console.log(notification_email_count);
+                console.log(notification_email_container);
+                for (let index = email_count; index < email_total_count; index++) {
+                  console.log("creating email input ", index)
+                  // <div class="wrap-input100 m-b-16">
+                  //   <input class="input100 opcional_email" type="email" name="notification_email#index#" placeholder="Email de notificação (opcional)">
+                  //   <span class="focus-input100"></span>
+                  // </div>
+
+                  let notification_email_sub_container = document.createElement("div");
+                  notification_email_sub_container.setAttribute("class", "wrap-input m-b-16");
+                  let focus_span = document.createElement("span");
+                  focus_span.setAttribute("class", "focus-input");
+                  console.log(focus_span);
+
+                  let notification_email = document.createElement("input");
+                  notification_email.setAttribute("class", "input opcional_email");
+                  notification_email.setAttribute("name", `notification_email.${index}`);
+                  notification_email.setAttribute("placeholder", "Email de notificação (opcional)");
+                  console.log(notification_email);
+
+                  notification_email_sub_container.appendChild(notification_email);
+                  notification_email_sub_container.appendChild(focus_span);
+                  notification_email_sub_container.appendChild(notification_email);
+                  notification_email_container.appendChild(notification_email_sub_container);
+                  console.log(notification_email_container);
+                }
+                
               }
-              
-              for (let index = email_count; index < email_total_count; index++) {
-                // <div class="wrap-input100 m-b-16">
-                //   <input class="input100 opcional_email" type="email" name="notification_email#index#" placeholder="Email de notificação (opcional)">
-                //   <span class="focus-input100"></span>
-                // </div>
 
-                let notification_email_container = document.createElement("div");
-                notification_email_container.setAttribute("class", "wrap-input100 m-b-16");
-                let focus_span = document.createElement("span");
-                focus_span.setAttribute("class", "focus-input100");
+              notification_email_count.addEventListener("change", add_email);
+            </script>
+            <div class="flex-sb-m w-full p-t-3 p-b-24">
+              <div>
+                <a href="{{url_for('login')}}" class="txt1">
+                  Log In
+                </a>
+              </div>
+            </div>
 
-                let notification_email = document.createElement("input");
-                notification_email.setAttribute("class", "input100 opcional_email");
-                notification_email.setAttribute("name", `notification_email.${index}`);
-                notification_email.setAttribute("placeholder", "Email de notificação (opcional)");
+          {% else %}
+            <!-- Class register -->
 
-                notification_email_container.appendChild(notification_email);
-                notification_email_container.appendChild(focus_span);
-                notification_email_container.appendChild(notification_email);
-              }
-              
-            }
-          </script>
+            <label for="name">Nome: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "O nome é obrigatório">
+              <input class="input100" type="text" name="name" placeholder="Nome">
+              <span class="focus-input100"></span>
+            </div>
+
+            <label for="name">Sala: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "A sala é obrigatório">
+              <input class="input100" type="text" name="room" placeholder="Sala">
+              <span class="focus-input100"></span>
+            </div>
+
+            <label for="name">Selecione os alunos: </label>
+            <div class="wrap-input100 validate-input m-b-16" data-validate = "A sala é obrigatório">
+              {% if students %}
+                {% for student in students %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="id.{{student['_id']}}">
+                    <label class="form-check-label" for="id.{{student['_id']}}">
+                      {{ student["name"] }} | {{ student["old"] }} anos de idade | {{ student["class"] if "class" in student else "Sem turma" }}
+                    </label>
+                  </div>
+                  {% endfor %}
+            {% endif %}
+            </div>
+
           {% endif %}
-					<div class="flex-sb-m w-full p-t-3 p-b-24">
-						<div>
-							<a href="{{url_for('login')}}" class="txt1">
-								Log In
-							</a>
-						</div>
-					</div>
+
 					<div class="container-login100-form-btn m-t-17">
 						<button class="login100-form-btn">
 							Cadastrar

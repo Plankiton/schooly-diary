@@ -24,7 +24,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - /tmp/.mongo.db:/data/db
+      - .mongo.db:/data/db
     environment:
       MONGO_REPLICA_SET_NAME: diary
       MONGO_INITDB_DATABASE: diary
