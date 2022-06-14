@@ -1,4 +1,6 @@
 from flask import Flask, url_for, render_template, request, redirect, session
+from bson.objectid import ObjectId
+from urllib import parse as url_encode
 from jinja2 import environment
 from pymongo import MongoClient
 from os import environ, getenv
@@ -23,16 +25,26 @@ classes = diary_db.classes
 
 @app.route('/', methods=['GET'])
 def index():
-    if session.get('logged_in'):
-        return render_template('home.html')
+    teacher = session.get('logged_in')
+    if teacher:
+        class_list = []
+        res = classes.find({"teacher_id": ObjectId(teacher["_id"])})
+        for clas in res:
+            class_list.append(dict(clas))
+        print(class_list, teacher)
+        return render_template('home.html', teacher=teacher, classes=class_list)
     else:
-        return render_template('index.html', message='Hello!')
+        return render_template('index.html', message='Bem vindo ao Diário Escolar professor!')
 
 
 @app.route('/register/<sign_type>', methods=['GET', 'POST'])
 def register(sign_type):
     if sign_type not in ['student', 'teacher', "class"]:
         return redirect('/not_found', code=404)
+
+    teacher = session["logged_in"]
+    if not teacher:
+        return redirect(url_for('login') + "?next=" + url_encode.quote("/register/"+sign_type), code=401)
 
     if request.method == 'POST':
         if sign_type == "class":
@@ -49,6 +61,7 @@ def register(sign_type):
                 del st_class[key]
 
             st_class["students"] = students
+            st_class["teacher_id"] = teacher["_id"]
             inserted = classes.insert_one(st_class)
             return redirect(url_for('get_' + sign_type, id=inserted.inserted_id))
 
@@ -80,7 +93,6 @@ def register(sign_type):
         if sign_type == "class":
             if students_res:
                 for st in students_res:
-                    print(st)
                     students.append(dict(st))
                 i = 0
                 for student in students:
@@ -92,23 +104,29 @@ def register(sign_type):
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    next = request.args.get("next")
+    if next:
+       next = url_encode.quote(next)
+    else:
+        next = url_for('index')
+
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', next=next)
     else:
         e = request.form['email']
         p = request.form['password']
-        print(e, p)
         data = persons.find_one({"email": e, "password": p, "type": "teacher"})
-        print(data)
         if data is not None:
-            session['logged_in'] = True
-            return redirect(url_for('index'))
-        return render_template('index.html', message='Incorrect Details')
+            data = dict(data)
+            data["_id"] = str(data['_id'])
+            session['logged_in'] = data
+            return redirect(next)
+        return render_template('index.html', message='Senha ou email incorretos!')
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    session['logged_in'] = False
+    session['logged_in'] = None
     return redirect(url_for('index'))
 
 # @app.route('/<sign_type>/<id>')

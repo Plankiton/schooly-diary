@@ -354,6 +354,12 @@ button {
   background-color: #403866;
 }
 
+a.login100-form-btn {
+  text-decoration: none;
+  font-weight: none;
+  color: white;
+}
+
 
 /*------------------------------------------------------------------
 [ Alert validate ]*/

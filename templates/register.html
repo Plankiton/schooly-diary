@@ -36,79 +36,83 @@
             </div>
 
             {% if sign_type == "teacher" %}
+
               <label for="senha">Senha: </label>
             <div class="wrap-input100 validate-input m-b-16" data-validate = "A senha é obrigatória">
                 <span class="focus-input100"></span>
                 <input class="input100" type="password" name="password" placeholder="Senha">
               </div>
-            {% endif %}
 
-            <label for="notification_email_count">Emails de notificação: </label>
-            <div class="wrap-input m-b-16">
-              <span class="focus-input"></span>
-              <input id="notification_email_count" class="wrap-input m-b-16"
-                placeholder="Quantidade de emails de notificação" name="notification_email_count"
-                type="number"
-              >
-              
-              <div id="notification_email_container">
+            {% elif sign_type == "student" %}
+
+              <label for="notification_email_count">Emails de notificação: </label>
+              <div class="wrap-input m-b-16">
+                <span class="focus-input"></span>
+                <input id="notification_email_count" class="wrap-input m-b-16"
+                  placeholder="Quantidade de emails de notificação" name="notification_email_count"
+                  type="number"
+                >
+                
+                <div id="notification_email_container">
+                </div>
               </div>
-            </div>
-            <script>
-              function add_email() {
-                let notification_email_container = document.getElementById("notification_email_container");
-                let notification_email_count = document.getElementById("notification_email_count");
+              <script>
+                function add_email() {
+                  let notification_email_container = document.getElementById("notification_email_container");
+                  let notification_email_count = document.getElementById("notification_email_count");
 
-                let email_total_count = Number(notification_email_count.value);
-                let email_count = notification_email_container.childElementCount
+                  let email_total_count = Number(notification_email_count.value);
+                  let email_count = notification_email_container.childElementCount
 
-                console.log("change ", email_total_count, email_count, email_total_count < email_count);
-                if (email_total_count < email_count) {
-                  for (let i = email_count; i > email_total_count; i--) {
-                    notification_email_container.removeChild(notification_email_container.lastChild);
+                  console.log("change ", email_total_count, email_count, email_total_count < email_count);
+                  if (email_total_count < email_count) {
+                    for (let i = email_count; i > email_total_count; i--) {
+                      notification_email_container.removeChild(notification_email_container.lastChild);
+                    }
+                    return
                   }
-                  return
-                }
-                
-                console.log(notification_email_count);
-                console.log(notification_email_container);
-                for (let index = email_count; index < email_total_count; index++) {
-                  console.log("creating email input ", index)
-                  // <div class="wrap-input100 m-b-16">
-                  //   <input class="input100 opcional_email" type="email" name="notification_email#index#" placeholder="Email de notificação (opcional)">
-                  //   <span class="focus-input100"></span>
-                  // </div>
-
-                  let notification_email_sub_container = document.createElement("div");
-                  notification_email_sub_container.setAttribute("class", "wrap-input m-b-16");
-                  let focus_span = document.createElement("span");
-                  focus_span.setAttribute("class", "focus-input");
-                  console.log(focus_span);
-
-                  let notification_email = document.createElement("input");
-                  notification_email.setAttribute("class", "input opcional_email");
-                  notification_email.setAttribute("name", `notification_email.${index}`);
-                  notification_email.setAttribute("placeholder", "Email de notificação (opcional)");
-                  console.log(notification_email);
-
-                  notification_email_sub_container.appendChild(notification_email);
-                  notification_email_sub_container.appendChild(focus_span);
-                  notification_email_sub_container.appendChild(notification_email);
-                  notification_email_container.appendChild(notification_email_sub_container);
+                  
+                  console.log(notification_email_count);
                   console.log(notification_email_container);
-                }
-                
-              }
+                  for (let index = email_count; index < email_total_count; index++) {
+                    console.log("creating email input ", index)
+                    // <div class="wrap-input100 m-b-16">
+                    //   <input class="input100 opcional_email" type="email" name="notification_email#index#" placeholder="Email de notificação (opcional)">
+                    //   <span class="focus-input100"></span>
+                    // </div>
 
-              notification_email_count.addEventListener("change", add_email);
-            </script>
-            <div class="flex-sb-m w-full p-t-3 p-b-24">
-              <div>
-                <a href="{{url_for('login')}}" class="txt1">
-                  Log In
-                </a>
+                    let notification_email_sub_container = document.createElement("div");
+                    notification_email_sub_container.setAttribute("class", "wrap-input m-b-16");
+                    let focus_span = document.createElement("span");
+                    focus_span.setAttribute("class", "focus-input");
+                    console.log(focus_span);
+
+                    let notification_email = document.createElement("input");
+                    notification_email.setAttribute("class", "input opcional_email");
+                    notification_email.setAttribute("name", `notification_email.${index}`);
+                    notification_email.setAttribute("placeholder", "Email de notificação (opcional)");
+                    console.log(notification_email);
+
+                    notification_email_sub_container.appendChild(notification_email);
+                    notification_email_sub_container.appendChild(focus_span);
+                    notification_email_sub_container.appendChild(notification_email);
+                    notification_email_container.appendChild(notification_email_sub_container);
+                    console.log(notification_email_container);
+                  }
+                  
+                }
+
+                notification_email_count.addEventListener("change", add_email);
+              </script>
+              <div class="flex-sb-m w-full p-t-3 p-b-24">
+                <div>
+                  <a href="{{url_for('login')}}" class="txt1">
+                    Log In
+                  </a>
+                </div>
               </div>
-            </div>
+
+            {% endif %}
 
           {% else %}
             <!-- Class register -->

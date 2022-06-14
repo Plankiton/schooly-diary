@@ -3,7 +3,7 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-t-50 p-b-90">
-				<form class="login100-form validate-form flex-sb flex-w" method="POST" action="/login">
+        <form class="login100-form validate-form flex-sb flex-w" method="POST" action="/login{{ '' if not next else '?next='+ next }}">
 					<span class="login100-form-title p-b-51">
 						Login
 					</span>
@@ -23,7 +23,7 @@
 					<div class="flex-sb-m w-full p-t-3 p-b-24">
 						<div>
 							<a href="{{ url_for('register', sign_type='teacher')}}" class="txt1">
-								Sign Up
+								Criar conta
 							</a>
 						</div>
 					</div>
