@@ -7,8 +7,20 @@
           Seja bem vindo professor {{ teacher["name"] }}<br>
 				</span>
 
+        <p>Selecione uma turma para mais detalhes:</p>
+
         {% for clas in classes %}
-           {{ clas["name"] }} | {{ clas["room"] }}
+          <a class="txt1" href="/register/diary" }}">
+            <div class="card">
+              <h3>Criar nova chamada</h3>
+            </div>
+          </a>
+          <a class="txt1" href="/class/{{ clas["_id"] }}">
+            <div class="card">
+              <h3>Turma {{ clas["name"] }} | Sala {{ clas["room"] }}<h3>
+              <p>Total de alunos: {{ clas["student_count"] }}</p>
+            </div>
+          </a>
         {% endfor %}
 
 				<div class="container-login100-form-btn m-t-17">

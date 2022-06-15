@@ -435,3 +435,8 @@ label {
 .reference_email_count {
   text-align: center;
 }
+
+.card {
+  padding: 15px;
+  background: #ddd;
+}

@@ -1,10 +1,11 @@
-from flask import Flask, url_for, render_template, request, redirect, session
+from flask import Flask, url_for, render_template, request, redirect, session, abort
 from bson.objectid import ObjectId
 from urllib import parse as url_encode
 from jinja2 import environment
 from pymongo import MongoClient
 from os import environ, getenv
 from dotenv import load_dotenv
+from validators import validate_class, validate_students, validate_person
 load_dotenv()
 
 database_uri = getenv('DATABASE_URI')
@@ -30,56 +31,46 @@ def index():
         class_list = []
         res = classes.find({"teacher_id": ObjectId(teacher["_id"])})
         for clas in res:
+            clas["student_count"] = len(clas["students"])
             class_list.append(dict(clas))
-        print(class_list, teacher)
         return render_template('home.html', teacher=teacher, classes=class_list)
     else:
         return render_template('index.html', message='Bem vindo ao Diário Escolar professor!')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('index.html', message="Pagina não encontrada"), 404
 
 @app.route('/register/<sign_type>', methods=['GET', 'POST'])
 def register(sign_type):
-    if sign_type not in ['student', 'teacher', "class"]:
-        return redirect('/not_found', code=404)
-
+    accepted_subpaths = ['student', 'teacher', "class", "diary"]
+    if sign_type not in accepted_subpaths:
+        abort(404, description=f"Register just support {accepted_subpaths}")
+        
     teacher = session["logged_in"]
-    if not teacher:
+    if not teacher and sign_type != "teacher":
         return redirect(url_for('login') + "?next=" + url_encode.quote("/register/"+sign_type), code=401)
 
     if request.method == 'POST':
         if sign_type == "class":
             st_class = request.form.to_dict()
 
-            students = []
-            remove = []
-            for key in st_class:
-                if "id" in key:
-                    print(key)
-                    students.append(key[key.index(".")+1:])
-                    remove.append(key)
-            for key in remove:
-                del st_class[key]
+            st_class = validate_class(st_class)
+            students = st_class["students"]
+            del st_class["students"]
 
-            st_class["students"] = students
-            st_class["teacher_id"] = teacher["_id"]
             inserted = classes.insert_one(st_class)
+            for st in students:
+                student = persons.find(st)
+                student = dict(student)
+                student["class_id"] = ObjectId(inserted.inserted_id)
+                persons.update_one({"_id": student["_id"]}, student, True)
             return redirect(url_for('get_' + sign_type, id=inserted.inserted_id))
 
         person = request.form.to_dict()
         person['type'] = sign_type
 
-        remove_list = []
-        notification_emails = []
-        if 'notification_email_count' in person:
-            del person['notification_email_count']
-        for key in person:
-            if 'notification_email' in key:
-                notification_emails.append(person[key])
-                remove_list.append(key)
-        for key in remove_list:
-            del person[key]
-        person['notification_emails'] = notification_emails
-
+        person = validate_person(person)
         try:
             inserted = persons.insert_one(person)
             if sign_type == 'teacher':
@@ -89,17 +80,18 @@ def register(sign_type):
             return render_template('index.html', message='User Already Exists')
     else:
         students_res = persons.find({ "type": "student" })
-        students = []
-        if sign_type == "class":
-            if students_res:
-                for st in students_res:
-                    students.append(dict(st))
-                i = 0
-                for student in students:
-                    student["old"] = 19
-                    student["class"] = "2 - A"
-                    students[i] = student
-                    i += 1
+        students = validate_students(students_res)
+
+        i = 0
+        for student in students:
+            if "class_id" in student:
+                sel_class = classes.find_one({"_id": student["class_id"]})
+                student["class"] = dict(sel_class)
+            students[i] = student
+            i += 1
+
+        if sign_type != "class":
+            students = []
         return render_template('register.html', sign_type=sign_type, students=students)
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -136,9 +128,20 @@ def logout():
 @app.route('/student/<id>')
 def get_student(id):
     return f'student/{id}'
+
+@app.route('/diary/<id>')
+def get_diary(id):
+    return f'diary/{id}'
+
 @app.route('/class/<id>')
 def get_class(id):
-    return f'/class/{id}'
+    sel_class = classes.find_one({"_id": ObjectId(id)})
+    sel_class["student_count"] = len(sel_class["students"])
+
+    students_res = persons.find({"class_id": ObjectId(id)})
+    students = validate_students(students_res)
+    return render_template('class.html', sel_class=sel_class, students=students)
+    
 @app.route('/teacher/<id>')
 def get_teacher(id):
     return f'/teacher/{id}'

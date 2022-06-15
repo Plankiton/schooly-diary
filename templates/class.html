@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100 p-t-50 p-b-90">
+      <span class="login100-form-title p-b-51">
+        Turma {{ sel_class["name"] }}<br>
+      </span>
+
+      <div class="sections-container">
+        <div id="student-list">
+          {% for student in students %}
+          <a class="txt1" href="/student/{{ student['_id'] }}">
+            <div class="diary card">
+              <h4>{{ student["name"] }}</h4>
+              <p>Idade: {{ student["old"] }}</p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        <div id="diary-history">
+          <h3>Chamadas</h3>
+
+          <div id="dirary-history-container">
+            <a class="txt1" href="/register/diary">
+              <div class="diary card">
+                <h4>
+                  Iniciar nova chamada
+                </h4>
+              </div>
+            </a>
+            <a class="txt1" href="/diary/fkadjsfkaslkflkd">
+              <div class="diary card">
+                <h4>
+                  <script>
+                    var data = new Date();
+                    document.write(data.toLocaleDateString());
+                  </script>
+                </h4>
+
+                <p>Alunos presentes: 24/30</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-login100-form-btn m-t-17">
+        <a class="login100-form-btn" href="/logout">
+          <button class="login100-form-btn">
+            Sair
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
