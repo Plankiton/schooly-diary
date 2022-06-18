@@ -15,6 +15,7 @@ services:
       - seccomp:unconfined
     ports:
       - 5000:5000
+    command: python3 app.py
     volumes:
       - ./:/app
     networks:
