@@ -148,5 +148,8 @@ def get_teacher(id):
 
 
 if __name__ == '__main__':
+    from sys import argv as args
     port = getenv("PORT") 
+    if len(args)>1:
+        port = args[1]
     app.run(port=int(port if port is not None else 5000))
