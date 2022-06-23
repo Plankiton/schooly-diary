@@ -47,7 +47,7 @@ def register(sign_type):
     if sign_type not in accepted_subpaths:
         abort(404, description=f"Register just support {accepted_subpaths}")
         
-    teacher = session["logged_in"]
+    teacher = session.get("logged_in")
     if not teacher and sign_type != "teacher":
         return redirect(url_for('login') + "?next=" + url_encode.quote("/register/"+sign_type), code=401)
 
